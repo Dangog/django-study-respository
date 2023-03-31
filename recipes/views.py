@@ -1,5 +1,4 @@
-from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import get_list_or_404, render
 
 from utils.recipes.factory import make_recipe
 
@@ -24,15 +23,17 @@ def recipe(request, id):
 
 
 def categoria(request, categoria_id):
-    receitas = Receita.objects.filter(
+    # receitas = Receita.objects.filter(
+    #     categoria__id=categoria_id,
+    #     estaPublicado=True
+    # ).order_by('-id')
+
+    receitas = get_list_or_404(Receita.objects.filter(
         categoria__id=categoria_id,
         estaPublicado=True
-    ).order_by('-id')
-
-    if not receitas:
-        raise Http404("Página não encontrada! Tente novamente")
+    ).order_by('-id'))
 
     return render(request, 'recipes/pages/category.html', context={
         'recipes': receitas,
-        'titulo':  f'{receitas.last().categoria.nome} - Categoria',
+        'titulo':  f'{receitas[0].categoria.nome} - Categoria',
     })
